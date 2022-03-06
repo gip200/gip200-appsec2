@@ -115,6 +115,12 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Cookies
+
+SESSION_COOKIE_SAMESITE = 'None'
+
+SESSION_COOKIE_SECURE = 'True'
+
 # Static Images:
 
 IMAGE_ROOT = os.path.join(BASE_DIR, 'images')

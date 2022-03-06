@@ -128,7 +128,7 @@ Learn about XSS here: https://portswigger.net/web-security/cross-site-scripting
 
    Find a GET or POST parameter that is vulnerable to reflected cross-site scripting vulnerability. 
 
-**Task 1.a:** Describe the technique(s) used to find and confirm the presence of the vulnerability. As a proof-of-concept exploit, log into the website and submit a JavaScript payload that generates an alert box containing the authenticated user's cookie data. Include screenshots of exploitation and snippets of relevant, vulnerable source code.
+**Task 1.a:** Describe the technique(s) used to find and confirm the presence of the vulnerability. As a proof-of-concept exploit, log into the website and submit a JavaScript payload that generates an alert box containing the authenticated user's cookie data. Were you able to obtain the user's cookie with JavaScript? Explain why or why not. Include screenshots of exploitation and snippets of relevant, vulnerable source code.
 
 **Task 1.b:** Using the Python `requests` library, write script that will check for the presence of the vulnerability. The script should send an HTTP request to the web server with a payload that triggers the vulnerability, and then it should parse the web server's response for any indication that the vulnerability was successfully exploited. If the the vulnerability is present, the script should simply print "Vulnerable to XSS!" Save the file as `<NetID>-xss.py` in the root of your repository. Run the script and show its output.
 > **Remember!** Your script will first need to perform a login task to create a session if the vulnerability is only exploitable while logged in.
@@ -147,7 +147,7 @@ Register two (2) distinct user accounts on the web application, one to serve as 
 
 **Task 2.b:** Using the Python `requests` library, write script that will check for the __potential__ presence of the vulnerability. Due to the nature of CSRF, your approach will be slightly different than that for the XSS vulnerability, and you will check for the presence of a mitigating token.  The script should send a routine HTTP request to the affected web resource, and then it should parse the web server's response for the presence of an HTML element containing `csrfmiddlewaretoken` within it. If the the mitigating control is not present, the script should simply print "Vulnerable to CSRF!" Save the file as `<NetID>-csrf.py` in the root of your repository. Run the script and show its output.
 
-**Task 2.c:** Modify the source code to mitigate the vulnerability identified. Describe the modifications, including specific source code snippets and related filenames affected, and describe why they are effective against the weakness.
+**Task 2.c:** Modify the source code to mitigate the vulnerability identified. Describe the modifications, including specific source code snippets and related filenames affected, and describe why they are effective against the weakness. There are two key changes to make - one related to the transmission of cookies and the other related to the token described in Task 2.b.
 
 **Task 2.d** Update `<NetID>-csrf.py` and modify the output to conditionally print "Not vulnerable to CSRF!" if the vulnerability is not successfully exploited.  Run the script and show its output. Explain why the technique employed by the script to determine the state of vulnerability may not be ideal.
 
