@@ -18,7 +18,7 @@ We would expect the following command to work, yet it does not. This is likely p
     <script> alert(document.cookie);</script>
 
 
-![Injection of script into form](https://github.com/gip200/gip200-appsec2/blob/main/Reports/Artifacts/gip200-lab2-part1a.jpg?raw=true)
+![Injection of script into form](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part1a.jpg?raw=true)
 
 
 
@@ -34,7 +34,7 @@ Further, then, we POST our exploit, something like     \<script> alert( 1 ) ; \<
     Vulnerable to XSS!
     nyuappsec@ubuntu:~/AppSec2$ 
 
-![enter image description here](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task1b.jpg?raw=true)
+![Script to test vulnerable](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part1b.jpg?raw=true)
 
 
 **Task 1.c:**  *Modify the source code to mitigate the vulnerability identified. Describe the modifications, including specific source code snippets and related filenames affected, and describe why they are effective against the weakness. Do not remove the reflected value; santize the input.*
@@ -47,15 +47,14 @@ Good input validation should be the first line of defense for every web applicat
 
 The result is that we clearly see the username field is sanitized and "Not XSS vulnerable" is given by our script.
 
-![enter image description here](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task1c.jpg?raw=true)
+![Fixup the XSS insertion](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part1c.jpg?raw=true)
 
 **Task 1.d**  *Update  `<NetID>-xss.py`  and modify the output to conditionally print "Not vulnerable to XSS!" if the vulnerability is not successfully exploited. Run the script and show its output*.
 
 Our script already previously accounted for the possibility that The result is that we clearly see the username field is sanitized and "Not XSS vulnerable" is given by our script.
 
 
-![enter image description here](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task1d.jpg?raw=true)
-
+![Script to test not vulnerable](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part1d.jpg?raw=true)
 
 
 
