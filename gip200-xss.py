@@ -29,7 +29,8 @@ for cookie in s.cookies:
 g = s.post(gift0Url, data=payload, cookies=cookies)
 
 #check if the output string proves it is vulnerable
-if g.text.find("ERROR: <script> alert(1) ; </script> IS NOT A VALID RECIPIENT.") !=-1:
+print(g.text)
+if g.text.find("ERROR: <script> alert(1)") !=-1:
 	print("Vulnerable to XSS!")
 else:
 	print("Not XSS Vulnerable.")
