@@ -98,20 +98,35 @@ However, the gift.html page does lacks this protection, which likely why it is a
 ![Vulnerability Explained](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part2a.jpg?raw=true)
 
 
+
+
+
+
 **Task 2.b:**  *Using the Python  `requests`  library, write script that will check for the  **potential**  presence of the vulnerability. Due to the nature of CSRF, your approach will be slightly different than that for the XSS vulnerability, and you will check for the presence of a mitigating token. The script should send a routine HTTP request to the affected web resource, and then it should parse the web server's response for the presence of an HTML element containing  `csrfmiddlewaretoken`  within it. If the the mitigating control is not present, the script should simply print "Vulnerable to CSRF!" Save the file as  `<NetID>-csrf.py`  in the root of your repository. Run the script and show its output.*
 
 
 To test the exploit, we simply need to leverage the initial login to check if the returned "buy.html" has the presence of _`csrfmiddlewaretoken`_ in its source. As per the attached picture below, we can interogate the pages to see if they are CSRF protected or not.
 
-![Script to test not vulnerable](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part2b.jpg?raw=true)
+
+![Script to test vulnerable](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part2b.jpg?raw=true)
+
+
+
 
 **Task 2.c:**  *Modify the source code to mitigate the vulnerability identified. Describe the modifications, including specific source code snippets and related filenames affected, and describe why they are effective against the weakness.*
 
-![Script to test not vulnerable](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part1d.jpg?raw=true)
+![Remediate vulnerable](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part2c.jpg?raw=true)
+
+
+
 
 **Task 2.d**  *Update  `<NetID>-csrf.py`  and modify the output to conditionally print "Not vulnerable to CSRF!" if the vulnerability is not successfully exploited. Run the script and show its output. Explain why the technique employed by the script to determine the state of vulnerability may not be ideal.*
 
 ![Script to test not vulnerable](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part2d.jpg?raw=true)
+
+
+
+
 
 
 ## HeadingTask 3 (18pts): Structured Query Language Injection (SQLi)
