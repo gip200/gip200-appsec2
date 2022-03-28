@@ -1,3 +1,4 @@
+
 # George Papadopoulos - gip200@nyu.edu
 
 LAB 2, Part 1
@@ -58,28 +59,59 @@ Our script already previously accounted for the possibility that The result is t
 
 
 
+
+
+
+
+
+
 ## Task 2 (18pts): Cross-Site Request Forgery (CSRF)
 
-Learn about CSRF here:  [https://portswigger.net/web-security/csrf](https://portswigger.net/web-security/csrf).
-
-Register two (2) distinct user accounts on the web application, one to serve as the target user (-target) and one to serve as the attacking user (-threat). Find a feature that allows users to send a gift card to another user, and confirm that the feature can successfully send a gift card between the two accounts (using one regular browser and one InPrivate/Incognito browser - one for each user - is a good technique for logging into the application with two different users).
-
-**Task 2.a:**  Describe the technique(s) used to find and confirm the presence of the vulnerability. As a proof-of-concept exploit, create an HTML exploit that abuses cross-site request forgery to coerce a transfer from the target user to the attacking user. Confirm the exploit works by executing the exploit in the target user's browser, and then verifying receipt of the gift card in the attacking user's browser.
-
-![enter image description here](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task2a.jpg?raw=true)
+*Learn about CSRF here:  [https://portswigger.net/web-security/csrf](https://portswigger.net/web-security/csrf).
+Register two (2) distinct user accounts on the web application, one to serve as the target user (-target) and one to serve as the attacking user (-threat). Find a feature that allows users to send a gift card to another user, and confirm that the feature can successfully send a gift card between the two accounts (using one regular browser and one InPrivate/Incognito browser - one for each user - is a good technique for logging into the application with two different users).*
 
 
-**Task 2.b:**  Using the Python  `requests`  library, write script that will check for the  **potential**  presence of the vulnerability. Due to the nature of CSRF, your approach will be slightly different than that for the XSS vulnerability, and you will check for the presence of a mitigating token. The script should send a routine HTTP request to the affected web resource, and then it should parse the web server's response for the presence of an HTML element containing  `csrfmiddlewaretoken`  within it. If the the mitigating control is not present, the script should simply print "Vulnerable to CSRF!" Save the file as  `<NetID>-csrf.py`  in the root of your repository. Run the script and show its output.
 
-![enter image description here](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task2b.jpg?raw=true)
+**Task 2.a:**  *Describe the technique(s) used to find and confirm the presence of the vulnerability. As a proof-of-concept exploit, create an HTML exploit that abuses cross-site request forgery to coerce a transfer from the target user to the attacking user. Confirm the exploit works by executing the exploit in the target user's browser, and then verifying receipt of the gift card in the attacking user's browser.*
 
-**Task 2.c:**  Modify the source code to mitigate the vulnerability identified. Describe the modifications, including specific source code snippets and related filenames affected, and describe why they are effective against the weakness.
 
-![enter image description here](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task2c.jpg?raw=true)
+For this vulnerability, we look to the gift card function with an authenticated user. One thing we notice is that the preceeding "buy.html" page enforces django CSRF middleware protection
 
-**Task 2.d**  Update  `<NetID>-csrf.py`  and modify the output to conditionally print "Not vulnerable to CSRF!" if the vulnerability is not successfully exploited. Run the script and show its output. Explain why the technique employed by the script to determine the state of vulnerability may not be ideal.
+    <input type="text" class="form-control mb-2" placeholder="$0.00" name="amount"<button class="btn btn-block" type="submit">Buy one</button>
+    <input type="hidden" name="csrfmiddlewaretoken" value="7AWjn2bJp59FCLwFwJhW8S5kd9dIeRRgo0MheJncquI2zTRvZQrxKQD1xARTGWG9"></form>
 
-![enter image description here](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task2d.jpg?raw=true)
+However, the gift.html page does lacks this protection, which likely why it is a good target for CSRF exploit. We see from the code in other pages like item-single.html that  {% csrf_token %} is leveraged.
+
+    <form action="/buy/{{ prod_num }}" method="post">
+        <div class="mb-4">
+                <input type="text" class="form-control mb-2" placeholder="$0.00" name="amount"> 
+                       <button class="btn btn-block" type="submit">Buy one</button>
+                  {% csrf_token %}
+    </form>
+
+
+
+
+
+
+
+![Vulnerability Explained](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part2a.jpg?raw=true)
+
+
+**Task 2.b:**  *Using the Python  `requests`  library, write script that will check for the  **potential**  presence of the vulnerability. Due to the nature of CSRF, your approach will be slightly different than that for the XSS vulnerability, and you will check for the presence of a mitigating token. The script should send a routine HTTP request to the affected web resource, and then it should parse the web server's response for the presence of an HTML element containing  `csrfmiddlewaretoken`  within it. If the the mitigating control is not present, the script should simply print "Vulnerable to CSRF!" Save the file as  `<NetID>-csrf.py`  in the root of your repository. Run the script and show its output.*
+
+
+To test the exploit, we simply need to leverage the initial login to check if the returned "buy.html" has the presence of _`csrfmiddlewaretoken`_ in its source. As per the attached picture below, we can interogate the pages to see if they are CSRF protected or not.
+
+![Script to test not vulnerable](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part2b.jpg?raw=true)
+
+**Task 2.c:**  *Modify the source code to mitigate the vulnerability identified. Describe the modifications, including specific source code snippets and related filenames affected, and describe why they are effective against the weakness.*
+
+![Script to test not vulnerable](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part1d.jpg?raw=true)
+
+**Task 2.d**  *Update  `<NetID>-csrf.py`  and modify the output to conditionally print "Not vulnerable to CSRF!" if the vulnerability is not successfully exploited. Run the script and show its output. Explain why the technique employed by the script to determine the state of vulnerability may not be ideal.*
+
+![Script to test not vulnerable](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part2d.jpg?raw=true)
 
 
 ## HeadingTask 3 (18pts): Structured Query Language Injection (SQLi)
@@ -179,6 +211,5 @@ The web application's back-end database contains valuable gift card data. If a t
 **Task 6.b:**  Assume that you have recently discovered that the decryption key for your database encryption has been compromised. Document the process for rotating your encryption key, and then show a screenshot of your  `Cards`  table again, showing the encrypted field values. Describe technically specific precautions you can take in the future to mitigate unauthorized access to your symmetric key.
 
 ## END OF LAB 2, Part 1 SUBMISSION
-
 
 
