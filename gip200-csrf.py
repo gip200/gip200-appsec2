@@ -3,7 +3,7 @@ import requests
 indexUrl = 'http://127.0.0.1/index.html'
 buyinUrl = 'http://127.0.0.1/buy.html'
 loginUrl = 'http://127.0.0.1/login.html'
-gift0Url = 'http://127.0.0.1/gift.html'
+gift0Url = 'http://127.0.0.1/gift/0'
 
 userInfo = {'uname': 'gip200', 'pword': 'aaaaaa'}
 payload = {'amount': '$0.00', 'username': '<script> alert(1) ; </script>'}
@@ -29,7 +29,7 @@ if b.text.find("csrfmiddlewaretoken") !=-1:
 else:
 	print("Vulnerable to CSRF!")
 
-g = s.post(gift0Url, data=payload, cookies=cookies)
+g = s.get(gift0Url, data=payload, cookies=cookies)
 
 #check if the output string proves it is vulnerable
 print("Checking ", gift0Url)
