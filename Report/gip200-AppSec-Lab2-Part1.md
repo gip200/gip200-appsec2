@@ -115,12 +115,25 @@ To test the exploit, we simply need to leverage the initial login to check if th
 
 **Task 2.c:**  *Modify the source code to mitigate the vulnerability identified. Describe the modifications, including specific source code snippets and related filenames affected, and describe why they are effective against the weakness.*
 
-![Remediate vulnerable](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part2c.jpg?raw=true)
+There are a few different remediation options. One basic one is to enable  'django.contrib.messages.middleware.MessageMiddleware' in the global Django settings 
+`(/home/nyuappsec/AppSec2/GiftcardSite/GiftcardSite/settings.py)` and then having it be effective in presenting middleware token support on all pages that can be validated. 
 
+    MIDDLEWARE = #add the following to list in settings.py
+    ['django.contrib.messages.middleware.MessageMiddleware']
 
+Using this internal built in CSRF countermeasure in Django is one way to do this. An alternate method might be to defend against CSRF attacks is using SameSite cookies. The SameSite/Strict attribute can be used to control whether and how cookies are submitted in cross-site requests and force (modern) browser to not include any cookies originating from other site.
+
+See pic under 2d for proof.
 
 
 **Task 2.d**  *Update  `<NetID>-csrf.py`  and modify the output to conditionally print "Not vulnerable to CSRF!" if the vulnerability is not successfully exploited. Run the script and show its output. Explain why the technique employed by the script to determine the state of vulnerability may not be ideal.*
+
+
+Our script already previously accounted for the possibility that The result is that we clearly see the username field is sanitized and "Not CSRF vulnerable" is given by our script due to validation of presence of  `"csrfmiddlewaretoken"` in the output source code.
+
+That said, this is likely not a reliable check because a) it could be set as a false statement to fake out csrf scanning, but also b) because alternate countermeasures such as SameSite cookie checks could also be in play, and only checking for the lack of one countermeasure is likely insufficient and would lead to false positives.
+
+
 
 ![Script to test not vulnerable](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part2d.jpg?raw=true)
 
@@ -226,5 +239,6 @@ The web application's back-end database contains valuable gift card data. If a t
 **Task 6.b:**  Assume that you have recently discovered that the decryption key for your database encryption has been compromised. Document the process for rotating your encryption key, and then show a screenshot of your  `Cards`  table again, showing the encrypted field values. Describe technically specific precautions you can take in the future to mitigate unauthorized access to your symmetric key.
 
 ## END OF LAB 2, Part 1 SUBMISSION
+
 
 
