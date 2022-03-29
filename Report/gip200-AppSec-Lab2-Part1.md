@@ -166,7 +166,7 @@ With the purchased card I tried several SQL statements in the signature until I 
 
 Once the files/exploit queries are created they can be loaded to show the output of the exploit as shown below, that shows first the users in the first query, and then their hashed passwords in the second, thus validating the SQL injection is possible.
 
-![Describe SQLi vulnerability](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task3a.jpg?raw=true)
+![Describe SQLi vulnerability](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part3a.jpg?raw=true)
 
 **Task 3.b:**  **Using the Python  `requests`  library, write script that will check for the presence of the vulnerability. The script should send an HTTP request to the web server with a payload that triggers the vulnerability, and then it should parse the web server's response for any indication that the vulnerability was successfully exploited. If the the vulnerability is present, the script should simply print "Vulnerable to SQLi!" Save the file as  `<NetID>-sqli.py`  in the root of your repository. Run the script and show its output.* **Remember!**  Your script will first need to perform a login task to create a session if the vulnerability is only exploitable while logged in.**
 
@@ -175,7 +175,7 @@ Using the XSS template, we can create the same script, leveraging the login sess
 
 
 
-![Script SQLi check](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task3b.jpg?raw=true)
+![Script SQLi check](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part3b.jpg?raw=true)
 
 **Task 3.c:**  Modify the source code to mitigate the vulnerability identified. Describe the modifications, including specific source code snippets and related filenames affected, and describe why they are effective against the weakness.
 
@@ -192,7 +192,7 @@ This will be effective at filtering injected SQL command from the input data fil
 
 **Task 3.d**  Update  `<NetID>-sqli.py`  and modify the output to conditionally print "Not vulnerable to SQLi!" if the vulnerability is not successfully exploited. Run the script and show its output.
 
-![Retest SQLi](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task3d.jpg?raw=true)
+![Retest SQLi](https://github.com/gip200/gip200-appsec2/blob/main/Report/Artifacts/gip200-lab2-part3a.jpg?raw=true)
 
 ---
 ## HeadingTask 4 (18pts): Command Injection (SQLi)
