@@ -61,7 +61,7 @@ Our script already previously accounted for the possibility that The result is t
 
 
 
-
+___
 
 
 
@@ -121,6 +121,8 @@ There are a few different remediation options. One basic one is to enable  'djan
     MIDDLEWARE = #add the following to list in settings.py
     ['django.contrib.messages.middleware.MessageMiddleware']
 
+Additionally, gift.html - added csrf_token in the POST method, adding {% csrf_token %}. Also, item-single.html and use-card.html.
+
 Using this internal built in CSRF countermeasure in Django is one way to do this. An alternate method might be to defend against CSRF attacks is using SameSite cookies. The SameSite/Strict attribute can be used to control whether and how cookies are submitted in cross-site requests and force (modern) browser to not include any cookies originating from other site.
 
 See pic under 2d for proof.
@@ -139,33 +141,60 @@ That said, this is likely not a reliable check because a) it could be set as a f
 
 
 
-
+---
 
 
 ## HeadingTask 3 (18pts): Structured Query Language Injection (SQLi)
 
-Learn about SQLi here:  [https://portswigger.net/web-security/sql-injection](https://portswigger.net/web-security/sql-injection)
+***Task 3.a:**  Describe the technique(s) used to find and confirm the presence of the vulnerability. As a proof-of-concept exploit, construct an SQLi attack string that will be used as malicious input within the gift card file. Confirm the exploit works by attepting using the card within the application and retrieving the password hash for your own user account as well as the  `administrator`  user account. Include screenshots and ensure to denote the specific field/parameter that was vulnerable, along with the exact attack string used to carry out the attack. Save the malicious gift card file as  `<NetID>-sqli.gftcrd`  in the root of your repository.*
 
-The application seems to process gift cards in a way that is vulnerable to SQL injection. Buy a gift card, and open the gift card file. One of the JSON parameters' values within it will ultimately be improperly processed by the application when you use the card.
+Per DJango doc, we have power to write raw queries or execute custom sql which is susceptible to SQLi attack when it is not used properly.
 
-**Task 3.a:**  Describe the technique(s) used to find and confirm the presence of the vulnerability. As a proof-of-concept exploit, construct an SQLi attack string that will be used as malicious input within the gift card file. Confirm the exploit works by attepting using the card within the application and retrieving the password hash for your own user account as well as the  `administrator`  user account. Include screenshots and ensure to denote the specific field/parameter that was vulnerable, along with the exact attack string used to carry out the attack. Save the malicious gift card file as  `<NetID>-sqli.gftcrd`  in the root of your repository.
+There are instances of raw queries being used in the views.py, this is a problem, these are used when the user uploads a card to use it. 
 
-![enter image description here](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task3a.jpg?raw=true)
+    card_query = Card.objects.raw('select id from LegacySite_card where data = '%s'' % signature) 
+    user_cards = Card.objects.raw('select id, count(*) as count from LegacySite_card where LegacySite_card.user_id = %s' % str(request.user.id))
 
-**Task 3.b:**  Using the Python  `requests`  library, write script that will check for the presence of the vulnerability. The script should send an HTTP request to the web server with a payload that triggers the vulnerability, and then it should parse the web server's response for any indication that the vulnerability was successfully exploited. If the the vulnerability is present, the script should simply print "Vulnerable to SQLi!" Save the file as  `<NetID>-sqli.py`  in the root of your repository. Run the script and show its output.
+Original Card
 
-> **Remember!**  Your script will first need to perform a login task to create a session if the vulnerability is only exploitable while logged in.
+    {"merchant_id": "NYU Apparel Card", "customer_id": "gip200", "total_value": 95, "records": [{"record_type": "amount_change", "amount_added": 2000, "signature": "[ insert crypto signature here ]"}]    }
 
-![enter image description here](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task3b.jpg?raw=true)
+With the purchased card I tried several SQL statements in the signature until I found one that works which I can send 2 queries to query seperately for the username and password in the LegacySite_user table.
+
+    {"merchant_id": "NYU Apparel Card", "customer_id": "gip200", "total_value": 95, "records": [{"record_type": "amount_change", "amount_added": 2000, "signature": "' union SELECT username FROM LegacySite_user --"}]    }
+        {"merchant_id": "NYU Apparel Card", "customer_id": "gip200", "total_value": 95, "records": [{"record_type": "amount_change", "amount_added": 2000, "signature": "' union SELECT password FROM LegacySite_user --"}]    }
+
+Once the files/exploit queries are created they can be loaded to show the output of the exploit as shown below, that shows first the users in the first query, and then their hashed passwords in the second, thus validating the SQL injection is possible.
+
+![Describe SQLi vulnerability](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task3a.jpg?raw=true)
+
+**Task 3.b:**  **Using the Python  `requests`  library, write script that will check for the presence of the vulnerability. The script should send an HTTP request to the web server with a payload that triggers the vulnerability, and then it should parse the web server's response for any indication that the vulnerability was successfully exploited. If the the vulnerability is present, the script should simply print "Vulnerable to SQLi!" Save the file as  `<NetID>-sqli.py`  in the root of your repository. Run the script and show its output.* **Remember!**  Your script will first need to perform a login task to create a session if the vulnerability is only exploitable while logged in.**
+
+Using the XSS template, we can create the same script, leveraging the login session statefullness of the previous script, except here we need to invoke/load the JSON data file which is the card ". We also may need to handle middleware token to address fixes we made for CSRF. Taking this into account, we can run our script and expect output that would reflect the username, such as admin, etc, which we can then match to confirm exploit.
+
+
+
+
+![Script SQLi check](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task3b.jpg?raw=true)
 
 **Task 3.c:**  Modify the source code to mitigate the vulnerability identified. Describe the modifications, including specific source code snippets and related filenames affected, and describe why they are effective against the weakness.
 
-![enter image description here](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task3c.jpg?raw=true)
+To remediate the SQLi exploit, we need to update the card query so it is sanitizing the request such that SQL is not directly able to parse commands. To do this we need to update the views.py function for card_query.
+
+
+    #Update the card_query from 
+    card_query = Card.objects.raw('select id from LegacySite_card where data = '%s'' % signature) 
+    #to
+     card_query = Card.objects.filter(data = signature.encode())
+
+This will be effective at filtering injected SQL command from the input data file/gift card.
+
 
 **Task 3.d**  Update  `<NetID>-sqli.py`  and modify the output to conditionally print "Not vulnerable to SQLi!" if the vulnerability is not successfully exploited. Run the script and show its output.
 
-![enter image description here](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task3d.jpg?raw=true)
+![Retest SQLi](https://github.com/gip200/gip200-appsec1/blob/main/Reports/Artifacts/gip200-lab2task3d.jpg?raw=true)
 
+---
 ## HeadingTask 4 (18pts): Command Injection (SQLi)
 
 Learn about command injection here:  [https://portswigger.net/web-security/os-command-injection](https://portswigger.net/web-security/os-command-injection)
@@ -239,6 +268,9 @@ The web application's back-end database contains valuable gift card data. If a t
 **Task 6.b:**  Assume that you have recently discovered that the decryption key for your database encryption has been compromised. Document the process for rotating your encryption key, and then show a screenshot of your  `Cards`  table again, showing the encrypted field values. Describe technically specific precautions you can take in the future to mitigate unauthorized access to your symmetric key.
 
 ## END OF LAB 2, Part 1 SUBMISSION
+
+
+
 
 
 
