@@ -14,11 +14,70 @@ Using GitHub Actions, automate the execution of the four automated vulnerability
 *The resulting GitHub Actions log should show an individual log - with a checkbox - for each test, each of which should be able to be expanded to show the result of the selected test (a la  `Vulnerable to ...!`  or  `Not vulnerable to ...!`)
 Ensure your final workflow file is saved to your repository, in  `.github/workflows/<NetID>-regression.yml`.**
 
+
 The process of setting up a workflow requires the creation of a yaml file that calls the appropriate scripts from the root directory of the repository and completes the runtime tasks and reporting for each stage. Unfortunately, I was unable to get this to work. 
 
 In principal, this would require a set of steps including the startup of django and its requirements, including python and other collateral requirements. Once the dkango and python were active, it would then require run tasks to invoke python to execute the four scripts.  This could be done on a periodic basis by CRON or on event requirements, such as push/pull changes to the underlying web site code, for example. 
 
 A sample attempted config is in the repository.
+
+    name: appsec-lab2-workflow
+    
+    on:
+      schedule:
+            - cron: "15 * * * *" #runs every 15 mins
+    
+    jobs:
+      test:
+        runs-on: ubuntu-18.04
+        strategy:
+          max-parallel: 4
+          matrix:
+            python-version: [3.8, 3.9]
+    
+        steps:
+          - uses: actions/checkout@v2
+          # this fixes local act bug of python setup
+          - name: local act python setup fix
+        run: |
+          # Hack to get setup-python to work on act
+          # (see https://github.com/nektos/act/issues/251)
+          if [ ! -f "/etc/lsb-release" ] ; then
+            echo "DISTRIB_RELEASE=18.04" > /etc/lsb-release
+          fi
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run Tests
+        env:
+          DEBUG: ${{ secrets.DEBUG }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          DB_ENGINE: ${{ secrets.DB_ENGINE }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          BASE_WEATHER_API_URL: ${{ secrets.BASE_WEATHER_API_URL }}
+        run: |
+          python manage.py test core.tests
+    - name: Run Tests
+      run: |
+        python manage.py test
+     - name: XSS Check Script
+      run: |
+        python ./gip200-xss.py
+     - name: CSRF Check Script
+      run: |
+        python ./gip200-csrf.py
+      - name: SQLi Check Script
+       run: |
+         python ./gip200-sqli.py
+      - name: CMDi Check Script
+       run: |
+         python ./gip200-cmdi.py
+
 
 
 
