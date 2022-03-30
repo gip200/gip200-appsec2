@@ -28,6 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+FIELD_ENCRYPTION_KEY = b'FrgJdEB1OYkkBQ21hz6Le-9ofVWy7MYpyQL0rS-Em48='
 
 # Application definition
 
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'encrypted_model_fields',
     # Custom
     'LegacySite',
 ]
