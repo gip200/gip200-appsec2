@@ -40,3 +40,19 @@ jobs:
           WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
         run: |
           python manage.py test core.tests
+    - name: Run Tests
+      run: |
+        python manage.py test
+     - name: XSS Check Script 
+      run: |
+        python ./gip200-xss.py
+     - name: CSRF Check Script 
+      run: |
+        python ./gip200-csrf.py
+      - name: SQLi Check Script 
+       run: |
+         python ./gip200-sqli.py
+      - name: CMDi Check Script 
+       run: |
+         python ./gip200-cmdi.py
+
