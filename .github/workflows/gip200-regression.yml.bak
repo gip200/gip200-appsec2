@@ -1,0 +1,40 @@
+name: appsec-lab2-workflow
+    
+on:
+  schedule:
+        - cron: "15 * * * *" #runs every 15 mins
+    
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Run Tests
+      run: |
+        python manage.py test
+     - name: XSS Check Script 
+      run: |
+        python ./gip200-xss.py
+     - name: CSRF Check Script 
+      run: |
+        python ./gip200-csrf.py
+      - name: SQLi Check Script 
+       run: |
+         python ./gip200-sqli.py
+      - name: CMDi Check Script 
+       run: |
+         python ./gip200-cmdi.py
