@@ -14,7 +14,13 @@ Using GitHub Actions, automate the execution of the four automated vulnerability
 *The resulting GitHub Actions log should show an individual log - with a checkbox - for each test, each of which should be able to be expanded to show the result of the selected test (a la  `Vulnerable to ...!`  or  `Not vulnerable to ...!`)
 Ensure your final workflow file is saved to your repository, in  `.github/workflows/<NetID>-regression.yml`.**
 
-	The process of setting up a workflow requires the creation of a yaml file that calls the appropriate scripts from the root directory of the repository and completes the runtime tasks and reporting for each stage.
+The process of setting up a workflow requires the creation of a yaml file that calls the appropriate scripts from the root directory of the repository and completes the runtime tasks and reporting for each stage. Unfortunately, I was unable to get this to work. 
+
+In principal, this would require a set of steps including the startup of django and its requirements, including python and other collateral requirements. Once the dkango and python were active, it would then require run tasks to invoke python to execute the four scripts.  This could be done on a periodic basis by CRON or on event requirements, such as push/pull changes to the underlying web site code, for example. 
+
+A sample attempted config is in the repository.
+
+
 
 
 
